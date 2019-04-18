@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -19,4 +20,6 @@ public class Inventory
 	@Column(name="product_code", nullable=false)
 	private String productCode;
 	private int quantity;
+	@Transient
+	private String store;
 }

@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.product.entity.ProductInventory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,14 @@ public class InventoryServiceClient {
 		this.env = env;
 		this.gson = gson;
 	}
-
-	@HystrixCommand(fallbackMethod="getDefaultInventory")
+	/* Hystrix will scan @Component or @Service annotated classes for @HystixCommand annotated methods */
+	@HystrixCommand(fallbackMethod="getProductInventory_fallback", 
+			commandProperties =
+		{
+				//@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE"),
+				@HystrixProperty(name="execution.isolation.thread.timeoutInMilliseconds", value="3000"),
+				@HystrixProperty(name="circuitBreaker.errorThresholdPercentage", value="60")
+		})
 	public Optional<ProductInventory> getProductInventory(String productCode)
 	{
 		log.info("In Product Inventory, response from port :"+env.getProperty("local.server.port"));
@@ -48,9 +55,9 @@ public class InventoryServiceClient {
 		}
 	}
 
-	public Optional<ProductInventory> getDefaultProductInventory(String productCode)
+	public Optional<ProductInventory> getProductInventory_fallback(String productCode)
 	{
-		log.info("Inventory Service not responsive !! Returning default inventory for : "+productCode);
+		log.info("Inventory Service not responsive !! Returning default inventory count for : "+productCode);
 		ProductInventory productInventory = new ProductInventory();
 		productInventory.setProductCode(productCode);
 		productInventory.setQuantity(1);

@@ -57,6 +57,7 @@ public class ConsumerGETClient {
 	}
 
 
+	@SuppressWarnings("unused")
 	private static void getDataAsString() {
 
 		HttpHeaders headers = new HttpHeaders();

@@ -8,5 +8,6 @@ public class ProductInventory {
 	private int id;
 	private String productCode;
 	private int quantity = 0;
+	private String store;
 	
 }

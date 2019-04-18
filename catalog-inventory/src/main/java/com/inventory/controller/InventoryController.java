@@ -1,6 +1,7 @@
 package com.inventory.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class InventoryController {
 	}
 	
 	@GetMapping("/code/{productCode}")
-	public Inventory getInventoryForProductCode(@PathVariable String productCode) throws InventoryNotFoundException
+	public Optional<Inventory> getInventoryForProductCode(@PathVariable String productCode) throws InventoryNotFoundException
 	{
 		return inventoryService.findInventoryByProductCode(productCode);
 	}

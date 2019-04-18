@@ -27,5 +27,14 @@ public class Product {
 	private String price;
 	@Transient
 	private boolean inStock = false;
+	@Transient
+	private String store;
+	@Transient
+	private Contact contact;
 	
 }
+
+/*enum STORE
+{
+	INDIA, RUSSIA, USA
+}*/
