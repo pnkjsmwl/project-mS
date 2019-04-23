@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: ribbon-client
+server:
+  port: 8001
+ribbon-server:
+  ribbon:
+    eureka:
+      enabled: true
+    ServerListRefreshInterval: 1000

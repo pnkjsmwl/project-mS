@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: zuul-netflix
+  cloud:
+    config:
+      uri: http://localhost:8888
+server:
+  port: 9001
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+zuul:
+  prefix: /api
+  routes:
+    product-service:
+      path: /product/**
+      service-id: product-service
+    inventory-service:
+      path: /inventory/**
+      service-id: inventory-service
+    inventory-store-service:
+      path: /store/**
+      service-id: inventory-store-service
+    contact-service:
+      path: /contact/**
+      service-id: contact-service

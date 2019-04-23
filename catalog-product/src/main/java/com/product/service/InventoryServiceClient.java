@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -20,17 +19,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InventoryServiceClient {
 
-	private final RestTemplate restTemplate;
 	private final Environment env;
 	private final Gson gson;
-	private final String SINGLE_INVENTORY_URL = "http://inventory-service/inventory/code/";
+	private final InventoryServiceFeignProxy inventoryServiceFeignProxy;
+	//private final RestTemplate restTemplate;
+	//private final String SINGLE_INVENTORY_URL = "http://inventory-service/inventory/code/";
 
 	@Autowired
-	public InventoryServiceClient(RestTemplate restTemplate, Environment env, Gson gson)
+	public InventoryServiceClient(Environment env, Gson gson, InventoryServiceFeignProxy inventoryServiceFeignProxy)
 	{
-		this.restTemplate = restTemplate;
+		//this.restTemplate = restTemplate;
 		this.env = env;
 		this.gson = gson;
+		this.inventoryServiceFeignProxy = inventoryServiceFeignProxy;
+		
 	}
 	/* Hystrix will scan @Component or @Service annotated classes for @HystixCommand annotated methods */
 	@HystrixCommand(fallbackMethod="getProductInventory_fallback", 
@@ -43,8 +45,11 @@ public class InventoryServiceClient {
 	public Optional<ProductInventory> getProductInventory(String productCode)
 	{
 		log.info("In Product Inventory, response from port :"+env.getProperty("local.server.port"));
-		ResponseEntity<ProductInventory> responseEntity = restTemplate.getForEntity(SINGLE_INVENTORY_URL + "{productCode}", ProductInventory.class, productCode);
+		// ResponseEntity<ProductInventory> responseEntity = restTemplate.getForEntity(SINGLE_INVENTORY_URL + "{productCode}", ProductInventory.class, productCode);
 
+		/* Usage of Feign client, replaced RestTemplate */
+		ResponseEntity<ProductInventory> responseEntity = inventoryServiceFeignProxy.getProductForCode(productCode);
+		
 		log.info("Body : "+gson.toJson(responseEntity.getBody()));
 		if(responseEntity.getStatusCode().equals(HttpStatus.OK))
 		{

@@ -1,7 +1,9 @@
 package com.product.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -46,11 +48,16 @@ public class ProductController {
 	public List<Product> getAllProducts()
 	{
 		List<Product> allProducts = productService.findAllProducts();
-		for(Product p : allProducts)
+		
+		List<String> productList = allProducts.stream().map(Product::getCode).collect(Collectors.toList());
+		
+		List<Product> allProductsResp = new ArrayList<Product>();
+		for(String code : productList)
 		{
-			log.info("Product : "+p.getId());
+			Optional<Product> prod = getProductByCode(code);
+			allProductsResp.add(prod.get());
 		}
-		return allProducts;
+		return allProductsResp;
 	}
 
 	@PostMapping(path="/add", consumes="application/json")
