@@ -72,7 +72,6 @@ public class ProductService {
 			}else {
 				log.info("Unable to get contact data !!");
 			}
-
 		}else {
 			throw new ProductNotFoundException("Product with code '"+productCode+"' not found");
 		}

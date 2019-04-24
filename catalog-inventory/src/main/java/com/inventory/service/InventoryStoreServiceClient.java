@@ -6,7 +6,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.inventory.entity.InventoryStore;
@@ -19,14 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InventoryStoreServiceClient {
 
-	private final String INVENTORY_STORE_URL = "http://inventory-store-service/store/";
-	private final RestTemplate restTemplate;
+	/*private final String INVENTORY_STORE_URL = "http://inventory-store-service/store/";
+	private final RestTemplate restTemplate;*/
 	private final Environment env;
 	private final Gson gson;
+	private final InventoryStoreServiceFeignProxy inventoryStoreFeignProxy;
 
-	public InventoryStoreServiceClient(RestTemplate restTemplate, Environment env, Gson gson)
+	public InventoryStoreServiceClient(InventoryStoreServiceFeignProxy inventoryStoreFeignProxy, Environment env, Gson gson)
 	{
-		this.restTemplate = restTemplate;
+		this.inventoryStoreFeignProxy = inventoryStoreFeignProxy;
 		this.env = env;
 		this.gson = gson;
 	}
@@ -41,7 +41,11 @@ public class InventoryStoreServiceClient {
 	public Optional<InventoryStore> getInventoryStoreByProductCode(String productCode)
 	{
 		log.info("In Inventory Store Service, response from port : "+env.getProperty("local.server.port"));
-		ResponseEntity<InventoryStore> respEntity = restTemplate.getForEntity(INVENTORY_STORE_URL+"{productCode}",InventoryStore.class, productCode);
+
+		//ResponseEntity<InventoryStore> respEntity = restTemplate.getForEntity(INVENTORY_STORE_URL+"{productCode}",InventoryStore.class, productCode);
+
+		ResponseEntity<InventoryStore> respEntity = inventoryStoreFeignProxy.getInventoryStore(productCode);
+
 
 		log.info("Body : "+gson.toJson(respEntity.getBody()));
 		if(respEntity.getStatusCode().equals(HttpStatus.OK))

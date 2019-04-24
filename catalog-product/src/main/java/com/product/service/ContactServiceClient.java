@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -15,12 +14,13 @@ import com.product.entity.Contact;
 @Service
 public class ContactServiceClient {
 
-	private String CONTACT_URL = "http://contact-service/contact/";
-	private RestTemplate restTemp;
+	/*private String CONTACT_URL = "http://contact-service/contact/";
+	private RestTemplate restTemp;*/
+	private final ContactServiceFeignProxy contactServiceFeignProxy;
 
 	@Autowired
-	public ContactServiceClient(RestTemplate restTemp) {
-		this.restTemp=restTemp;
+	public ContactServiceClient(ContactServiceFeignProxy contactServiceFeignProxy) {
+		this.contactServiceFeignProxy = contactServiceFeignProxy;
 	}
 
 	@HystrixCommand(fallbackMethod="getContactData_fallback", 
@@ -32,7 +32,9 @@ public class ContactServiceClient {
 		})
 	public Optional<Contact> getContactData(String code)
 	{
-		ResponseEntity<Contact> respEntity = restTemp.getForEntity(CONTACT_URL+"{code}", Contact.class, code);
+		//ResponseEntity<Contact> respEntity = restTemp.getForEntity(CONTACT_URL+"{code}", Contact.class, code);
+
+		ResponseEntity<Contact> respEntity = contactServiceFeignProxy.getContactByCode(code);
 
 		if(respEntity.getStatusCode().equals(HttpStatus.OK))
 		{

@@ -22,13 +22,12 @@ public class InventoryServiceClient {
 	private final Environment env;
 	private final Gson gson;
 	private final InventoryServiceFeignProxy inventoryServiceFeignProxy;
-	//private final RestTemplate restTemplate;
-	//private final String SINGLE_INVENTORY_URL = "http://inventory-service/inventory/code/";
+	/*private final RestTemplate restTemplate;
+	private final String SINGLE_INVENTORY_URL = "http://inventory-service/inventory/code/";*/
 
 	@Autowired
 	public InventoryServiceClient(Environment env, Gson gson, InventoryServiceFeignProxy inventoryServiceFeignProxy)
 	{
-		//this.restTemplate = restTemplate;
 		this.env = env;
 		this.gson = gson;
 		this.inventoryServiceFeignProxy = inventoryServiceFeignProxy;
